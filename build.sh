@@ -16,8 +16,9 @@ publicip=`oci resource-manager job get-job-logs --job-id ${jobocid} --raw-output
 publicip=`echo ${publicip#Public_IP = *}`
 echo ${publicip}
 echo Install and enable NGINX...
-ssh -i nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'sudo yum install -y -q nginx;sudo systemctl enable nginx;sudo systemctl start nginx;sudo firewall-cmd --zone=public --add-port=80/tcp --permanent;sudo firewall-cmd --reload'
+chmod 600 /tmp/build/nopassphrase.key
+ssh -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'sudo yum install -y -q nginx;sudo systemctl enable nginx;sudo systemctl start nginx;sudo firewall-cmd --zone=public --add-port=80/tcp --permanent;sudo firewall-cmd --reload'
 echo Copy VBCS app on target Compute...
-scp -i nopassphrase.key -o "StrictHostKeyChecking=no" ./build/built-assets.zip  opc@${publicip}:/tmp
+scp -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" ./build/built-assets.zip  opc@${publicip}:/tmp
 echo Unzip VBCS app...
 ssh -i nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'sudo unzip /tmp/built-assets.zip /usr/share/nginx/html'
