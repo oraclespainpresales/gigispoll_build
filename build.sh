@@ -19,6 +19,15 @@ echo get Public IP...
 publicip=`oci resource-manager job get-job-logs --job-id ${jobocid} --raw-output --query "data[?contains(\"message\", 'Public_IP')].message | [0]"`
 publicip=`echo ${publicip#Public_IP = *}`
 echo ${publicip}
+echo Wait until Comput SSH cnx is available...
+ssh -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'exit'
+while $? == 255 do
+delay
+retry
+end while
+
+
+
 echo Install and enable NGINX...
 chmod 600 /tmp/build/nopassphrase.key
 ssh -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'sudo yum install -y -q nginx;sudo systemctl enable nginx;sudo systemctl start nginx;sudo firewall-cmd --zone=public --add-port=80/tcp --permanent;sudo firewall-cmd --reload'
@@ -32,4 +41,6 @@ applicationid=`oci fn application list --compartment-id ${compartmentid} --raw-o
 echo Retrieving Function Id...
 functionid=`oci fn function list --application-id ${applicationid} --raw-output --query "data[?contains(\"display-name\", 'getnewuuid')].id | [0]"`
 echo Updating Function Env Var...
-oci fn function update --function-id ${functionid} --config '{"VBCSURI": "http://"'${publicip}'"/gigispoll/webApps/enterpoll/"}'
+newuri=`echo http://${publicip}/gigispoll/webApps/enterpoll/`
+oci fn function update --function-id ${functionid} --config '{"VBCSURI":"'${newuri}'"}' --force
+echo Done!!
