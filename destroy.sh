@@ -15,7 +15,7 @@ echo ${stacks}
 echo $stacks | jq -r -c '.[]' | while read stackocid; do
   echo Destroying stack ${stackocid}
   result=`oci resource-manager job create-destroy-job --stack-id ${stackocid} --execution-plan-strategy AUTO_APPROVED --wait-for-state CANCELED --wait-for-state FAILED --wait-for-state SUCCEEDED --wait-interval-seconds 1 --raw-output --query "data.\"lifecycle-state\""`
-  echo Destroy operation for Stack ${stackocid}, result: ${re}
+  echo Destroy operation for Stack ${stackocid}, result: ${result}
   oci resource-manager stack delete --stack-id ${stackocid} --force
   echo Stack ${stackocid} deleted
 done
