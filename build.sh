@@ -20,10 +20,10 @@ publicip=`oci resource-manager job get-job-logs --job-id ${jobocid} --raw-output
 publicip=`echo ${publicip#Public_IP = *}`
 echo ${publicip}
 echo Wait until Comput SSH cnx is available...
+chmod 600 /tmp/build/nopassphrase.key
 ssh -o ConnectTimeout=5 -o ConnectionAttempts=10 -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'exit'
 if [ $? -eq 255 ]; then echo "Unable to connect to Compute, aborting..."; exit -1; fi
 echo Install and enable NGINX...
-chmod 600 /tmp/build/nopassphrase.key
 ssh -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" opc@${publicip} 'sudo yum install -y -q nginx;sudo systemctl enable nginx;sudo systemctl start nginx;sudo firewall-cmd --zone=public --add-port=80/tcp --permanent;sudo firewall-cmd --reload'
 echo Copy VBCS app on target Compute...
 scp -i /tmp/build/nopassphrase.key -o "StrictHostKeyChecking=no" ./build/built-assets.zip  opc@${publicip}:/tmp
