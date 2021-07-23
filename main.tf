@@ -1,4 +1,6 @@
-provider oci {}
+provider oci {
+	region = "eu-frankfurt-1"
+}
 
 resource oci_core_instance generated_oci_core_instance {
 	agent_config {
@@ -85,14 +87,12 @@ resource oci_core_default_route_table generated_oci_core_default_route_table {
 }
 
 variable compartment_id {}
+variable availability_domain {}
 variable shape {
   default = "VM.Standard.E2.1.Micro"
 }
 variable ssh_authorized_keys {
   default = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCSOFfGW2I4W3uyLcNr8YSCD/J/F7DPIvDoT8DIyWX2lbPf17PPGmJsQLbehx0mS8RBT4s20PIFB90svSyI60yqjs2aes3kBVS7XpqmNSbfOUdalJSPHnRXSY/z0k390SVsx7j4aXJN3otV8SUVj3LBYofV5J0WMwja/rk87o2hfzzO8YYZ01s3wXMtPDjj7TUt0lykMdgFb7QW5a7Y66V4+lBe0o08AZxixUVSd0H/DQ8R8HmxQLG0i9Nl7TfhFVeeUvE0fSyQaLgmjLGbRKg0QmGW2hKK9BOehing8G5n0dd1hJ6/pXLY9dQn4jI7NqCxVpMYKj9WOq9tE8nhZt9t ssh-key-2020-11-18"
-}
-variable availability_domain {
-  default = "dJRa:EU-FRANKFURT-1-AD-2"
 }
 
 output "Public_IP" {
